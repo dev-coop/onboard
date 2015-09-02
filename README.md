@@ -11,6 +11,7 @@ export PORT=5000
 
 export GITHUB_ORGANIZATION_NAME=the_gang
 export GITHUB_API_KEY=1234567890
+export GITHUB_ONBOARD_TEAM_NAME=Underlings
 
 export SLACK_API_TOKEN=1234567890  # the key you'd use to talk to Slack API
 export SLACK_API_SECRET=1234567890  # the key Slack sends to us to verify it's really Slack

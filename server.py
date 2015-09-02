@@ -12,6 +12,7 @@ from requests import post as request_post
 env_var_names = (
     'GITHUB_API_KEY',
     'GITHUB_ORGANIZATION_NAME',
+    'GITHUB_ONBOARD_TEAM_NAME',
     'SLACK_API_TOKEN',
     'SLACK_API_SECRET',
     'SLACK_TEAM_NAME',
@@ -38,9 +39,26 @@ def github_request(method, endpoint, data=None):
 
 
 def github_add_member_to_org(github_username):
+    # Get list of teams
+    resp = github_request(
+        'GET',
+        '/orgs/%s/teams' % env['GITHUB_ORGANIZATION_NAME']
+    )
+
+    if resp.status_code != 200:
+        return resp
+
+    team_id = 0
+    for team in resp.json():
+        if team['name'].lower() == env['GITHUB_ONBOARD_TEAM_NAME'].lower():
+            team_id = team['id']
+
+    if team_id == 0:
+        raise Exception("Team not found!")
+
     return github_request(
         'PUT',
-        '/orgs/%s/memberships/%s' % (env['GITHUB_ORGANIZATION_NAME'], github_username),
+        '/teams/%s/memberships/%s' % (team_id, github_username),
         data=json.dumps({"role": "member"})
     )
 
