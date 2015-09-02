@@ -61,7 +61,7 @@ def slack_invite(email):
 
 
 # ----------------------------------------------------------------------------
-# Views / server
+# Views
 # ----------------------------------------------------------------------------
 @post('/add')
 def add():
@@ -101,5 +101,8 @@ def nice_index():
     return "Hello, I am an <a href='https://github.com/dev-coop/onboard'>onboarding bot</a>!"
 
 
+# ----------------------------------------------------------------------------
+# Server
+# ----------------------------------------------------------------------------
 # Heroku sets PORT env var
 run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
