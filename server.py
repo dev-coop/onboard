@@ -66,15 +66,15 @@ def slack_invite(email):
 @post('/add')
 def add():
     # Parse input
-    if request.forms.get('token') != env['SLACK_API_TOKEN']:
+    if request.forms.get('token') != env['SLACK_API_SECRET']:
         # Make sure we got a request from the actual slack server not some ass hole
         response.status = 403
-        return {"error": "Invalid SLACK_API_TOKEN received, does not match. Received %s" % request.forms.get('token')}
+        return "Invalid SLACK_API_TOKEN received, does not match. Received %s" % request.forms.get('token')
 
     text = request.forms.get('text')
     if not text or len(text.split(' ')) != 2:
          response.status = 400
-         return {"error": "Invalid text input, should look like /onboard <github name>; <email>"}
+         return "Invalid text input, should look like /onboard <github name>; <email>"
 
     github_username, email = text.split(' ')
     github_username = github_username.strip()
@@ -84,13 +84,13 @@ def add():
     resp = github_add_member_to_org(github_username)
     if resp.status_code != 200:
         response.status = 500
-        return {"error": "Bad response from Github (%s): %s" % (resp.status_code, resp.content)}
+        return "Bad response from Github (%s): %s" % (resp.status_code, resp.content)
 
     # Add to slack
     resp = slack_invite(email)
     if resp.status_code != 200:
         response.status = 500
-        return {"error": "Bad response from Slack (%s): %s" % (resp.status_code, resp.content)}
+        return "Bad response from Slack (%s): %s" % (resp.status_code, resp.content)
 
     # Add to screenhero
     # TODO
