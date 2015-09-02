@@ -2,9 +2,9 @@
 a slack integration for adding team members to github, slack, and screenhero. hosted on heroku
 
 
-# Usage
+# Setup
 
-### Setup env vars
+### Env vars
 
 ```bash
 export PORT=5000
@@ -19,6 +19,13 @@ export SLACK_TEAM_NAME=paddys_pub
 
 ### Run
 
-`python server.py` 
+```bash
+python server.py
+``` 
 
 It will start running on the port specified by the `PORT` env var or default `5000`
+
+
+# Usage on slack
+
+`/onboard <github username> <email>`
