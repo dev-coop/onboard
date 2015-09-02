@@ -46,7 +46,6 @@ def github_add_member_to_org(github_username):
 
 
 def slack_invite(email):
-    print env['SLACK_API_TOKEN']
     return request_post(
         'https://%s.slack.com/api/users.admin.invite' % (env['SLACK_TEAM_NAME']),
         data=json.dumps({
