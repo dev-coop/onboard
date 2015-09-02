@@ -68,7 +68,8 @@ def add():
     # Parse input
     if request.forms.get('token') != env['SLACK_API_TOKEN']:
         # Make sure we got a request from the actual slack server not some ass hole
-        return HTTPError(status=403)
+        response.status_code = 403
+        return {"error": "Invalid SLACK_API_TOKEN received, does not match. Received %s" % request.forms.get('token')}
 
     text = request.forms.get('text')
     if not text or len(text.split(' ')) != 2:
