@@ -91,6 +91,8 @@ def add():
     if resp.status_code != 200:
         response.status = 500
         return "Bad response from Slack (%s): %s" % (resp.status_code, resp.content)
+    elif "error" in resp.json():
+        return "Bad response from Slack (%s): %s" % (resp.status_code, resp.json()["error"])
 
     # Add to screenhero
     # TODO
