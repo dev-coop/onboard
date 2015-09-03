@@ -110,6 +110,8 @@ def add():
         error_messages.append("Bad response from Slack (%s): %s" % (resp.status_code, resp.content))
     elif "error" in resp.json():
         error_messages.append("Bad response from Slack (%s): %s" % (resp.status_code, resp.json()["error"]))
+    else:
+        success_messages.append("Added to Slack")
 
     # TODO: Add to screenhero
     response_text = ''
