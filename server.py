@@ -79,6 +79,7 @@ def slack_invite(email):
 # ----------------------------------------------------------------------------
 @post('/add')
 def add():
+    success_messages = []
     error_messages = []
 
     # Parse input
@@ -98,7 +99,9 @@ def add():
 
     # Add to github
     resp = github_add_member_to_org(github_username)
-    if resp.status_code != 200:
+    if resp.status_code == 200:
+        success_messages.append("Added to GitHub")
+    else:
         error_messages.append("Bad response from Github (%s): %s" % (resp.status_code, resp.content))
 
     # Add to slack
@@ -109,12 +112,17 @@ def add():
         error_messages.append("Bad response from Slack (%s): %s" % (resp.status_code, resp.json()["error"]))
 
     # TODO: Add to screenhero
+    response_text = ''
 
-    if len(error_messages) == 0:
-        return "Successfully added user to Github, Slack and Screenhero... wee!"
-    else:
+    if len(success_messages) != 0:
+        success_concated = '\n'.join(success_messages)
+        response_text += "Successful:\n" + success_concated + '\n\n'
+
+    if len(error_messages) != 0:
         errors_concated = '\n'.join(error_messages)
-        return "Some services failed to onboard:\n" + errors_concated
+        response_text += "Failed:\n" + errors_concated
+
+    return response_text
 
 
 @get("/")
