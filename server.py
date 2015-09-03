@@ -66,14 +66,10 @@ def github_add_member_to_org(github_username):
 def slack_invite(email):
     return request_post(
         'https://%s.slack.com/api/users.admin.invite' % (env['SLACK_TEAM_NAME']),
-        data=json.dumps({
+        data={
             "token": env['SLACK_API_TOKEN'],
             "email": email,
             "set_active": True,
-        }),
-        headers={
-            'Content-type': 'application/json',
-            'Accept': 'text/plain'
         }
     )
 
@@ -83,6 +79,8 @@ def slack_invite(email):
 # ----------------------------------------------------------------------------
 @post('/add')
 def add():
+    error_messages = []
+
     # Parse input
     if request.forms.get('token') != env['SLACK_API_SECRET']:
         # Make sure we got a request from the actual slack server not some ass hole
@@ -101,20 +99,22 @@ def add():
     # Add to github
     resp = github_add_member_to_org(github_username)
     if resp.status_code != 200:
-        response.status = 500
-        return "Bad response from Github (%s): %s" % (resp.status_code, resp.content)
+        error_messages.append("Bad response from Github (%s): %s" % (resp.status_code, resp.content))
 
     # Add to slack
     resp = slack_invite(email)
     if resp.status_code != 200:
-        response.status = 500
-        return "Bad response from Slack (%s): %s" % (resp.status_code, resp.content)
+        error_messages.append("Bad response from Slack (%s): %s" % (resp.status_code, resp.content))
     elif "error" in resp.json():
-        return "Bad response from Slack (%s): %s" % (resp.status_code, resp.json()["error"])
+        error_messages.append("Bad response from Slack (%s): %s" % (resp.status_code, resp.json()["error"]))
 
-    # Add to screenhero
-    # TODO
-    return "Successfully added user to Github, Slack and Screenhero... wee!"
+    # TODO: Add to screenhero
+
+    if len(error_messages) == 0:
+        return "Successfully added user to Github, Slack and Screenhero... wee!"
+    else:
+        errors_concated = '\n'.join(error_messages)
+        return "Some services failed to onboard:\n" + errors_concated
 
 
 @get("/")
